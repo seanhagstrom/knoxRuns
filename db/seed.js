@@ -1,4 +1,5 @@
-const { client } = require('./client');
+const client = require('./client');
+const { createUser } = require('./users');
 
 const dropTables = async () => {
   try {
@@ -34,7 +35,12 @@ const createTables = async () => {
 
 const createInitialUsers = async () => {
   console.log('Adding initial users to "Users" table...');
-  console.log('Finished adding users!');
+  try {
+    await createUser({ username: 'Sean', password: '123' });
+    console.log('Finished adding users!');
+  } catch (error) {
+    throw error;
+  }
 };
 
 const rebuildDB = async () => {

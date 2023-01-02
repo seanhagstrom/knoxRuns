@@ -5,6 +5,4 @@ const connectionString = `postgres://localhost:5432/${pkg.name}`;
 
 const client = new Client({ connectionString });
 
-module.exports = {
-  client,
-};
+module.exports = client;
