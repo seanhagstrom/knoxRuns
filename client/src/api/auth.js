@@ -13,8 +13,12 @@ export const loginUser = async ({ username, password }) => {
     });
 
     const data = await response.json();
-    console.log(data);
-    return data;
+    if (data.token) {
+      // Temporary to get auth working.
+      window.localStorage.setItem('token', data.token);
+      return data;
+    }
+    return;
   } catch (error) {
     console.error(error);
   }

@@ -14,7 +14,6 @@ app.use(express.static(path.join(__dirname, './client', 'dist')));
 
 app.use('/api', require('./api'));
 app.use('/auth', require('./auth'));
-app.use('/exchange_token', require('../exchange_token'));
 
 app.use((req, res, next) => {
   try {
