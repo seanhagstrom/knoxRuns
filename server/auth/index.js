@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { authenticateUser } = require('../db');
 
+// GET auth
 router.get('/', (req, res, next) => {
   try {
     res.status(200).send('You made it to the Auth route!');
@@ -10,6 +11,7 @@ router.get('/', (req, res, next) => {
   }
 });
 
+// POST auth/login
 router.post('/login', async (req, res, next) => {
   try {
     const { username, password } = req.body;
