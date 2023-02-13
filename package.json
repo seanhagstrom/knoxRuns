@@ -2,11 +2,11 @@
   "name": "knoxRuns",
   "version": "1.0.0",
   "description": "A passion project for endurance running coaches and athletes alike.",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
     "start": "node index.js",
     "server:dev": "nodemon index.js",
-    "start:dev": "(npm run dev --prefix client) & nodemon index.js",
+    "start:dev": "(npm run dev --prefix client) & nodemon server/index.js",
     "seed": "node db/seed.js"
   },
   "author": "Sean Hagstrom",
