@@ -46,7 +46,7 @@ router.get('/exchange_token', async (req, res, next) => {
     );
     console.log(data);
 
-    res.redirect(`${BASE_URL}`);
+    res.redirect(`${BASE_URL}/me`);
   } catch (error) {
     next(error);
   }

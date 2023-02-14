@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './components/App';
 import AuthForm from './components/AuthForm';
+import Profile from './components/Profile';
 import './styles/index.css';
 
 export const router = createBrowserRouter([
@@ -13,6 +14,14 @@ export const router = createBrowserRouter([
       {
         path: 'login',
         element: <AuthForm />,
+      },
+      {
+        path: 'register',
+        element: <AuthForm />,
+      },
+      {
+        path: 'me',
+        element: <Profile />,
       },
     ],
   },
