@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const axios = require('axios');
-const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
-const { authenticateUser } = require('../db');
 const BASE_URL = `http://localhost:5173`;
+const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
+const { authenticateUser, getUserByUsername, createUser } = require('../db');
+const { generateRandomPassword } = require('../utils');
 
 // GET auth
 router.get('/', (req, res, next) => {
@@ -20,15 +21,6 @@ router.get('/exchange_token', async (req, res, next) => {
     query: { code },
   } = req;
   try {
-    console.log(code);
-
-    // const header = {
-    //   headers: {
-    //     Accept: 'application/json, text/plain, */*',
-    //     'Content-Type': 'application/json',
-    //   },
-    // };
-
     const { data } = await axios.post(
       `https://www.strava.com/oauth/token`,
       {
@@ -44,9 +36,28 @@ router.get('/exchange_token', async (req, res, next) => {
         },
       }
     );
-    console.log(data);
 
-    res.redirect(`${BASE_URL}/me`);
+    console.log('authdata: ', data);
+    const {
+      athlete: { username },
+    } = data;
+
+    const user = await getUserByUsername(username);
+
+    if (!user) {
+      const password = generateRandomPassword();
+
+      const userToCreate = {
+        username,
+        password,
+      };
+
+      const userCreated = await createUser(userToCreate);
+
+      res.redirect(`${BASE_URL}/register`);
+    } else {
+      res.redirect(`${BASE_URL}/me`);
+    }
   } catch (error) {
     next(error);
   }
@@ -59,7 +70,6 @@ router.post('/login', async (req, res, next) => {
 
     const result = await authenticateUser({ username, password });
     if (result.token) {
-      console.log('this is my token!', result.token);
       res.status(200).send(result);
     } else {
       next(result);

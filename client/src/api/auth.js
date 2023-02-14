@@ -1,10 +1,10 @@
 const { VITE_STRAVA_CLIENT_ID } = import.meta.env;
 const { VITE_STRAVA_CLIENT_SECRET } = import.meta.env;
 
-export const loginUser = async ({ username, password }) => {
-  console.log('in src/api/auth loginUser');
+export const loginUser = async ({ username, password, formname: name }) => {
+  console.log(`in src/api/auth loginUser with formname: ${name}`);
   try {
-    const response = await fetch(`auth/login`, {
+    const response = await fetch(`auth/${name}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -18,7 +18,7 @@ export const loginUser = async ({ username, password }) => {
     const data = await response.json();
     if (data.token) {
       // Temporary to get auth working.
-      window.localStorage.setItem('token', data.token);
+      localStorage.setItem('token', data.token);
       return data;
     }
     return;
