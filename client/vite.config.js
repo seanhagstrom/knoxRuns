@@ -8,7 +8,8 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:3000',
       '/auth': 'http://localhost:3000',
-      '/exchange_token': 'http://localhost:3000',
     },
   },
+  envDir: '../',
+  envPrefix: 'VITE_',
 });
