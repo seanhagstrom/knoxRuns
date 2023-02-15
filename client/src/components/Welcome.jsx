@@ -17,14 +17,16 @@ function Welcome() {
       </div>
       <div>
         <p>New to KnoxRuns? Sign up.</p>
-
-        <button
+        <NavLink to='signup'>
+          <button>Sign Up</button>
+        </NavLink>
+        {/* <button
           onClick={() => {
             history.push(URL);
           }}
         >
           Sign Up with Strava
-        </button>
+        </button> */}
       </div>
     </div>
   );

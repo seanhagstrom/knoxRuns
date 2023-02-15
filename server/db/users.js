@@ -15,13 +15,15 @@ async function createUser({ email, password }) {
     INSERT INTO users(email, password)
     VALUES ($1, $2)
     ON CONFLICT (email) DO NOTHING
-    RETURNING id, email
+    RETURNING id, email, isVerified;
     `,
       [email, password]
     );
 
     console.log('is this user?', user);
-    return user;
+    const createdUser = await generateToken(user);
+    console.log('what is this? ', createdUser);
+    return createdUser;
   } catch (error) {
     console.error(error);
     throw error;
@@ -43,6 +45,7 @@ async function getUserByEmail(email) {
     `,
       [email]
     );
+    console.log('getUserByEmail: ', user);
     return user;
   } catch (error) {
     throw error;

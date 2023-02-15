@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import history from 'history/browser';
-import { loginUser } from '../api/auth';
+import { authenticateUser } from '../api/auth';
 
 const URL = `http://www.strava.com/oauth/authorize?client_id=73695&response_type=code&redirect_uri=http://localhost:3000/auth/exchange_token&approval_prompt=force&scope=read_all,activity:read_all`;
 
@@ -27,17 +27,14 @@ const AuthForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      if (formname === 'login') {
-        const email = event.target.email.value;
-        const password = event.target.password.value;
+      const email = event.target.email.value;
+      const password = event.target.password.value;
 
-        const data = await loginUser({ email, password, formname });
-        if (data.token) {
-          // history.push(URL);
-          navigate('/me');
-        }
-      } else {
-        console.log('something else here soon!');
+      const data = await authenticateUser({ email, password, formname });
+      console.log(data);
+      if (data.token) {
+        // history.push(URL);
+        navigate('/me');
       }
     } catch (error) {
       console.error(error);

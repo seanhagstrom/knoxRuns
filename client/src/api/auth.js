@@ -1,8 +1,8 @@
 const { VITE_STRAVA_CLIENT_ID } = import.meta.env;
 const { VITE_STRAVA_CLIENT_SECRET } = import.meta.env;
 
-export const loginUser = async ({ email, password, formname: name }) => {
-  console.log(`in src/api/auth loginUser with formname: ${name}`);
+export const authenticateUser = async ({ email, password, formname: name }) => {
+  console.log(`in src/api/auth authenticateUser with formname: ${name}`);
   try {
     const response = await fetch(`auth/${name}`, {
       method: 'POST',

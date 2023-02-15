@@ -78,5 +78,22 @@ router.post('/login', async (req, res, next) => {
     next(error);
   }
 });
+// POST auth/signup
+router.post('/signup', async (req, res, next) => {
+  console.log('in auth/signup');
+  try {
+    const { email, password } = req.body;
+
+    const result = await createUser({ email, password });
+
+    if (result.token) {
+      res.status(200).send(result);
+    } else {
+      next(result);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
