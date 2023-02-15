@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { getMe } from './api/auth';
+import Activities from './components/Activities';
+import Activity from './components/Activity';
 import App from './components/App';
 import AuthForm from './components/AuthForm';
 import Profile from './components/Profile';
@@ -30,6 +32,16 @@ export const router = createBrowserRouter([
         path: 'me',
         element: <Profile />,
         loader: getMe,
+      },
+      {
+        path: 'activities',
+        element: <Activities />,
+        children: [
+          {
+            path: ':activityId',
+            element: <Activity />,
+          },
+        ],
       },
     ],
   },
