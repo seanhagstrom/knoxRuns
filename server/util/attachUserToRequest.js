@@ -11,7 +11,7 @@ const attachUserToRequest = async (req, res, next) => {
     } else {
       const [, token] = auth.split(' ');
       const { id } = jwt.verify(token, JWT_SECRET);
-      console.log('id in attachUserToRequest: ', id);
+
       const user = await getUserById({ id });
 
       if (!user) {
