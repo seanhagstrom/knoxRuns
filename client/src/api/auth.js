@@ -30,7 +30,7 @@ export const authenticateUser = async ({ email, password, formname: name }) => {
 export const getMe = async () => {
   try {
     const token = localStorage.token;
-    console.log(typeof token);
+
     if (!token) {
       return null;
     }

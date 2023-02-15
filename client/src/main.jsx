@@ -5,6 +5,7 @@ import { getMe } from './api/auth';
 import App from './components/App';
 import AuthForm from './components/AuthForm';
 import Profile from './components/Profile';
+import Welcome from './components/Welcome';
 import './styles/index.css';
 
 export const router = createBrowserRouter([
@@ -12,8 +13,11 @@ export const router = createBrowserRouter([
     path: '/',
     element: <App />,
     loader: getMe,
-    // loader: async () => await getMe(),
     children: [
+      {
+        path: 'welcome',
+        element: <Welcome />,
+      },
       {
         path: 'login',
         element: <AuthForm />,

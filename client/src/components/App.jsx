@@ -16,7 +16,6 @@ function App() {
 
   return (
     <div>
-      <Welcome />
       <h1>Nav Element will go here!</h1>
       <Outlet />
       <h1>Footer Element will go here!</h1>
