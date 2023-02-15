@@ -1,24 +1,40 @@
 import { useState, useEffect } from 'react';
 import '../styles/App.css';
-import { Outlet, useLoaderData, useNavigate } from 'react-router-dom';
+import {
+  Outlet,
+  useLoaderData,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
+import Navbar from './Navbar';
+import Footer from './Footer';
 import Welcome from './Welcome';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.token);
   const navigate = useNavigate();
   const user = useLoaderData();
+  let location = useLocation();
 
   useEffect(() => {
     if (user) {
-      navigate('/me');
+      navigate('me');
+    } else {
+      navigate('welcome');
     }
   }, []);
 
   return (
     <div>
-      <h1>Nav Element will go here!</h1>
-      <Outlet />
-      <h1>Footer Element will go here!</h1>
+      {location.pathname === '/welcome' ? (
+        <Outlet />
+      ) : (
+        <>
+          <Navbar />
+          <Outlet />
+          <Footer />
+        </>
+      )}
     </div>
   );
 }

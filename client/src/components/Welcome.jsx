@@ -11,13 +11,13 @@ function Welcome() {
 
       <div>
         <p>Already have an account?</p>
-        <NavLink to='login'>
+        <NavLink to='/login'>
           <button>Log In</button>
         </NavLink>
       </div>
       <div>
         <p>New to KnoxRuns? Sign up.</p>
-        <NavLink to='signup'>
+        <NavLink to='/signup'>
           <button>Sign Up</button>
         </NavLink>
         {/* <button
