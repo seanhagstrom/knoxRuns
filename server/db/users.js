@@ -20,9 +20,8 @@ async function createUser({ email, password }) {
       [email, password]
     );
 
-    console.log('is this user?', user);
     const createdUser = await generateToken(user);
-    console.log('what is this? ', createdUser);
+    console.log('createdUser in createUser', createdUser);
     return createdUser;
   } catch (error) {
     console.error(error);
@@ -30,9 +29,27 @@ async function createUser({ email, password }) {
   }
 }
 
-async function getUser() {}
-
-async function getUserById() {}
+async function getUserById({ id }) {
+  try {
+    if (!id) {
+      return { name: 'Bad Token', message: 'Please login!' };
+    } else {
+      const {
+        rows: [user],
+      } = await client.query(
+        `
+        SELECT id, email, isVerified, created_on FROM users
+        WHERE id = $1;
+        `,
+        [id]
+      );
+      return user;
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 
 async function getUserByEmail(email) {
   try {
@@ -80,7 +97,6 @@ async function generateToken({ id }) {
 
 module.exports = {
   createUser,
-  getUser,
   getUserById,
   getUserByEmail,
   authenticateUser,

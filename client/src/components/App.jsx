@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/App.css';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLoaderData, useNavigate } from 'react-router-dom';
 import Welcome from './Welcome';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.token);
+  const navigate = useNavigate();
+  const user = useLoaderData();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/me');
+    }
+  }, []);
 
   return (
     <div>

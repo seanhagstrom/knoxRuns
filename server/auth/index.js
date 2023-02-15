@@ -2,14 +2,20 @@ const router = require('express').Router();
 const axios = require('axios');
 const BASE_URL = `http://localhost:5173`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
-const { authenticateUser, getUserByUsername, createUser } = require('../db');
+const {
+  authenticateUser,
+  getUserByUsername,
+  createUser,
+  getUserByToken,
+} = require('../db');
 const { generateRandomPassword } = require('../util/generateRandomPassword');
 const { sendEmail } = require('../util/sendEmail');
 
-// GET auth
-router.get('/', (req, res, next) => {
+// GET auth/me
+router.get('/me', async (req, res, next) => {
   try {
-    res.status(200).send('You made it to the Auth route!');
+    const user = req.user;
+    res.status(200).send(user);
   } catch (error) {
     console.error(error);
     throw error;
@@ -79,6 +85,7 @@ router.post('/login', async (req, res, next) => {
     next(error);
   }
 });
+
 // POST auth/signup
 router.post('/signup', async (req, res, next) => {
   console.log('in auth/signup');

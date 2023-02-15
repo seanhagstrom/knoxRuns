@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { getMe } from './api/auth';
 import App from './components/App';
 import AuthForm from './components/AuthForm';
 import Profile from './components/Profile';
@@ -10,6 +11,8 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    loader: getMe,
+    // loader: async () => await getMe(),
     children: [
       {
         path: 'login',
@@ -22,6 +25,7 @@ export const router = createBrowserRouter([
       {
         path: 'me',
         element: <Profile />,
+        loader: getMe,
       },
     ],
   },

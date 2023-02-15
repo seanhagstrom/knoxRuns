@@ -26,3 +26,26 @@ export const authenticateUser = async ({ email, password, formname: name }) => {
     console.error(error);
   }
 };
+
+export const getMe = async () => {
+  try {
+    const token = localStorage.token;
+    console.log(typeof token);
+    if (!token) {
+      return null;
+    }
+    const response = await fetch(`auth/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};

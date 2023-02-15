@@ -5,6 +5,7 @@ const path = require('path');
 const client = require('./db/client');
 const morgan = require('morgan');
 const cors = require('cors');
+const { attachUserToRequest } = require('./util/attachUserToRequest');
 
 client.connect();
 
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, './client', 'dist')));
 
+app.use(attachUserToRequest);
 app.use('/api', require('./api'));
 app.use('/auth', require('./auth'));
 
