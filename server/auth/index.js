@@ -3,7 +3,8 @@ const axios = require('axios');
 const BASE_URL = `http://localhost:5173`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
 const { authenticateUser, getUserByUsername, createUser } = require('../db');
-const { generateRandomPassword } = require('../utils');
+const { generateRandomPassword } = require('../util/generateRandomPassword');
+const { sendEmail } = require('../util/sendEmail');
 
 // GET auth
 router.get('/', (req, res, next) => {
@@ -87,6 +88,13 @@ router.post('/signup', async (req, res, next) => {
     const result = await createUser({ email, password });
 
     if (result.token) {
+      await sendEmail({
+        to: email,
+        from: 'knoxrunsapp@gmail.com',
+        subject: 'KnoxRuns Account Verification',
+        text: `Thank you for signing up with KnoxRuns!
+        `,
+      });
       res.status(200).send(result);
     } else {
       next(result);
