@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { JWT_SECRET } = process.env;
 
-async function createUser({ username, password }) {
+async function createUser({ email, password }) {
   try {
     password = await bcrypt.hash(password, saltRounds);
 
@@ -12,12 +12,12 @@ async function createUser({ username, password }) {
       rows: [user],
     } = await client.query(
       `
-    INSERT INTO users(username, password)
+    INSERT INTO users(email, password)
     VALUES ($1, $2)
-    ON CONFLICT (username) DO NOTHING
-    RETURNING id, username
+    ON CONFLICT (email) DO NOTHING
+    RETURNING id, email
     `,
-      [username, password]
+      [email, password]
     );
 
     console.log('is this user?', user);
@@ -32,16 +32,16 @@ async function getUser() {}
 
 async function getUserById() {}
 
-async function getUserByUsername(username) {
+async function getUserByEmail(email) {
   try {
     const {
       rows: [user],
     } = await client.query(
       `
     SELECT * FROM users
-    WHERE username = $1
+    WHERE email = $1
     `,
-      [username]
+      [email]
     );
     return user;
   } catch (error) {
@@ -49,9 +49,9 @@ async function getUserByUsername(username) {
   }
 }
 
-async function authenticateUser({ username, password }) {
+async function authenticateUser({ email, password }) {
   try {
-    const user = await getUserByUsername(username);
+    const user = await getUserByEmail(email);
     console.log(user);
     const match = await bcrypt.compare(password, user.password);
 
@@ -60,7 +60,7 @@ async function authenticateUser({ username, password }) {
     } else {
       return {
         name: 'Incorrect Credentials',
-        message: 'Username or password are incorrect',
+        message: 'email or password are incorrect',
       };
     }
   } catch (error) {
@@ -79,6 +79,6 @@ module.exports = {
   createUser,
   getUser,
   getUserById,
-  getUserByUsername,
+  getUserByEmail,
   authenticateUser,
 };

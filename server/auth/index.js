@@ -66,9 +66,9 @@ router.get('/exchange_token', async (req, res, next) => {
 // POST auth/login
 router.post('/login', async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const result = await authenticateUser({ username, password });
+    const result = await authenticateUser({ email, password });
     if (result.token) {
       res.status(200).send(result);
     } else {

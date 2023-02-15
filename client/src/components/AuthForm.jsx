@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import history from 'history/browser';
 import { loginUser } from '../api/auth';
 
@@ -7,6 +7,7 @@ const URL = `http://www.strava.com/oauth/authorize?client_id=73695&response_type
 
 const AuthForm = () => {
   let location = useLocation();
+  let navigate = useNavigate();
 
   console.log('This is my local: ', location.pathname);
   // let params = new URLSearchParams(location.search);
@@ -21,18 +22,19 @@ const AuthForm = () => {
   //     })();
   //   }
   // }, [code]);
-  let formname = location.pathname === '/login' ? 'login' : 'register';
+  let formname = location.pathname === '/login' ? 'login' : 'signup';
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       if (formname === 'login') {
-        const username = event.target.username.value;
+        const email = event.target.email.value;
         const password = event.target.password.value;
 
-        const data = await loginUser({ username, password, formname });
+        const data = await loginUser({ email, password, formname });
         if (data.token) {
-          history.push(URL);
+          // history.push(URL);
+          navigate('/me');
         }
       } else {
         console.log('something else here soon!');
@@ -42,35 +44,20 @@ const AuthForm = () => {
     }
   };
 
-  const buttonContent =
-    formname === 'login' ? 'Log In' : 'Complete Registration';
+  const buttonContent = formname === 'login' ? 'Log In' : 'Sign Up';
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        {formname === 'login' ? (
-          <>
-            <div>
-              <label htmlFor='username'>Username</label>
-              <input type='text' name='username' />
-            </div>
-            <div>
-              <label htmlFor='password'>Password</label>
-              <input type='text' name='password' />
-            </div>
-          </>
-        ) : (
-          <>
-            <div>
-              <label htmlFor='username'>Email</label>
-              <input type='text' name='email' />
-            </div>
-            {/* <div>
+        <div>
+          <label htmlFor='email'>Email</label>
+          <input type='text' name='email' />
+        </div>
+        <div>
           <label htmlFor='password'>Password</label>
           <input type='text' name='password' />
-        </div> */}
-          </>
-        )}
+          {/* At some point add a password confirmation input */}
+        </div>
         <button>{buttonContent}</button>
       </form>
     </div>
