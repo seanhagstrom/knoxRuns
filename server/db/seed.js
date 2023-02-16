@@ -1,5 +1,5 @@
 const client = require('./client');
-const { createUser } = require('./users');
+const { createUser, updateUser } = require('./users');
 
 const dropTables = async () => {
   try {
@@ -31,11 +31,23 @@ const createTables = async () => {
     await client.query(`
     CREATE TABLE users(
       user_id SERIAL PRIMARY KEY,
+      strava_id int,
       email VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
-      isVerified BOOLEAN DEFAULT false,
-      canEmail BOOLEAN DEFAULT true,
-      verificationString VARCHAR(255) NOT NULL,
+      username VARCHAR(255),
+      firstname VARCHAR(255),
+      lastname VARCHAR(255),
+      is_verified BOOLEAN DEFAULT false,
+      email_allowed BOOLEAN DEFAULT true,
+      verification_string VARCHAR(255) NOT NULL,
+      refresh_token VARCHAR(255),
+      access_token VARCHAR(255),
+      bio TEXT,
+      city VARCHAR(255),
+      state VARCHAR(255),
+      sex VARCHAR(20),
+      weight NUMERIC(10,3),
+      profile_image TEXT,
       created_on TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -137,7 +149,8 @@ const createInitialUsers = async () => {
     await createUser({
       email: 'sean@sean.com',
       password: '123',
-      verificationString: 'replace this with a UUID later!',
+      verification_string: 'replace this with a UUID later!',
+      profile_image: '/public/default-user-image.png',
     });
     console.log('Finished adding users!');
   } catch (error) {
@@ -150,6 +163,12 @@ const createInitialUsers = async () => {
     await dropTables();
     await createTables();
     await createInitialUsers();
+    console.log('updating user: ');
+    const upatedUserObj = await updateUser(1, {
+      email: 'grim@sean.com',
+      profile_image: 'another image url',
+    });
+    console.log({ upatedUserObj });
   } catch (error) {
     console.error('Error during rebuildDB', error);
     throw error;

@@ -31,7 +31,6 @@ export const router = createBrowserRouter([
       {
         path: 'me',
         element: <Profile />,
-        loader: getMe,
       },
       {
         path: 'activities',

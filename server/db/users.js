@@ -3,8 +3,16 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { JWT_SECRET } = process.env;
+const { authenticateUser } = require('../util/authenticateUser');
+const { buildSetString } = require('../util/buildSetString');
 
-async function createUser({ email, password, verificationString }) {
+// Start Create User
+async function createUser({
+  email,
+  password,
+  verification_string,
+  profile_image,
+}) {
   try {
     password = await bcrypt.hash(password, saltRounds);
 
@@ -12,15 +20,18 @@ async function createUser({ email, password, verificationString }) {
       rows: [user],
     } = await client.query(
       `
-    INSERT INTO users(email, password, verificationString)
-    VALUES ($1, $2, $3)
+    INSERT INTO users(email, password, verification_string, profile_image)
+    VALUES ($1, $2, $3, $4)
     ON CONFLICT (email) DO NOTHING
-    RETURNING user_id, email, isVerified;
+    RETURNING user_id, email, is_verified;
     `,
-      [email, password, verificationString]
+      [email, password, verification_string, profile_image]
     );
 
-    const createdUser = await generateToken(user);
+    const createdUser = {
+      token: jwt.sign({ id: user.user_id }, JWT_SECRET),
+      message: "You're logged in!",
+    };
     console.log('createdUser in createUser', createdUser);
     return createdUser;
   } catch (error) {
@@ -29,6 +40,7 @@ async function createUser({ email, password, verificationString }) {
   }
 }
 
+/*** Start Get User Functions ***/
 async function getUserById({ id }) {
   try {
     if (!id) {
@@ -38,11 +50,12 @@ async function getUserById({ id }) {
         rows: [user],
       } = await client.query(
         `
-        SELECT user_id, email, isVerified, created_on FROM users
-        WHERE id = $1;
+        SELECT * FROM users
+        WHERE user_id = $1;
         `,
         [id]
       );
+      console.log('restrict what you get back in db/users getUserByID');
       return user;
     }
   } catch (error) {
@@ -51,7 +64,7 @@ async function getUserById({ id }) {
   }
 }
 
-async function getUserByEmail(email) {
+async function getUserByEmail({ email }) {
   try {
     const {
       rows: [user],
@@ -65,39 +78,40 @@ async function getUserByEmail(email) {
     console.log('getUserByEmail: ', user);
     return user;
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }
+/*** End Get User Functions ***/
 
-async function authenticateUser({ email, password }) {
+/*** Start Update User  ***/
+async function updateUser(id, fields = {}) {
+  const setString = await buildSetString(fields);
+
   try {
-    const user = await getUserByEmail(email);
-    console.log(user);
-    const match = await bcrypt.compare(password, user.password);
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    UPDATE users
+    SET ${setString}
+    WHERE user_id = ${id}
+    RETURNING *;
+    `,
+      Object.values(fields)
+    );
 
-    if (user && match) {
-      return await generateToken(user);
-    } else {
-      return {
-        name: 'Incorrect Credentials',
-        message: 'email or password are incorrect',
-      };
-    }
+    console.log(user);
+    return user;
   } catch (error) {
+    console.error(error);
     throw error;
   }
-}
-
-async function generateToken({ user_id }) {
-  return {
-    token: jwt.sign({ id: user_id }, JWT_SECRET),
-    message: "You're logged in!",
-  };
 }
 
 module.exports = {
   createUser,
   getUserById,
   getUserByEmail,
-  authenticateUser,
+  updateUser,
 };

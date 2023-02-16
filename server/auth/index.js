@@ -4,9 +4,10 @@ const BASE_URL = `http://localhost:5173`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
 const {
   authenticateUser,
-  getUserByUsername,
+  getUserById,
   createUser,
   getUserByToken,
+  updateUser,
 } = require('../db');
 const { generateRandomPassword } = require('../util/generateRandomPassword');
 const { sendEmail } = require('../util/sendEmail');
@@ -23,9 +24,11 @@ router.get('/me', async (req, res, next) => {
 });
 
 // GET auth/exchange_token
-router.get('/exchange_token', async (req, res, next) => {
+router.get('/exchange_token/:id', async (req, res, next) => {
+  console.log(req.params);
   const {
     query: { code },
+    params: { id },
   } = req;
   try {
     const { data } = await axios.post(
@@ -45,25 +48,55 @@ router.get('/exchange_token', async (req, res, next) => {
     );
 
     console.log('authdata: ', data);
-    const {
-      athlete: { username },
-    } = data;
 
-    const user = await getUserByUsername(username);
+    const user = await getUserById({ id });
+    console.log(user);
 
-    if (!user) {
-      const password = generateRandomPassword();
+    if (user && !user.strava_id) {
+      const {
+        refresh_token,
+        access_token,
+        athlete: {
+          id: strava_id,
+          username,
+          firstname,
+          lastname,
+          city,
+          state,
+          sex,
+          weight,
+          profile_medium: profile_image,
+        },
+      } = data;
 
-      const userToCreate = {
+      const fields = {
+        refresh_token,
+        access_token,
+        strava_id,
         username,
-        password,
+        firstname,
+        lastname,
+        city,
+        state,
+        sex,
+        weight,
+        profile_image,
       };
 
-      const userCreated = await createUser(userToCreate);
-
-      res.redirect(`${BASE_URL}/register`);
-    } else {
+      await updateUser(id, fields);
       res.redirect(`${BASE_URL}/me`);
+    } else if (user && user.is_verified) {
+      res.redirect(`${BASE_URL}/me`);
+    } else {
+      // const password = generateRandomPassword();
+
+      // const userToCreate = {
+      //   username,
+      //   password,
+      // };
+
+      // const userCreated = await createUser(userToCreate);
+      res.redirect(`${BASE_URL}/register`);
     }
   } catch (error) {
     next(error);
