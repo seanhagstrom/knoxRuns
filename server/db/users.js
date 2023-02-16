@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { JWT_SECRET } = process.env;
 
-async function createUser({ email, password }) {
+async function createUser({ email, password, verificationString }) {
   try {
     password = await bcrypt.hash(password, saltRounds);
 
@@ -12,12 +12,12 @@ async function createUser({ email, password }) {
       rows: [user],
     } = await client.query(
       `
-    INSERT INTO users(email, password)
-    VALUES ($1, $2)
+    INSERT INTO users(email, password, verificationString)
+    VALUES ($1, $2, $3)
     ON CONFLICT (email) DO NOTHING
-    RETURNING id, email, isVerified;
+    RETURNING user_id, email, isVerified;
     `,
-      [email, password]
+      [email, password, verificationString]
     );
 
     const createdUser = await generateToken(user);
@@ -38,7 +38,7 @@ async function getUserById({ id }) {
         rows: [user],
       } = await client.query(
         `
-        SELECT id, email, isVerified, created_on FROM users
+        SELECT user_id, email, isVerified, created_on FROM users
         WHERE id = $1;
         `,
         [id]
@@ -88,9 +88,9 @@ async function authenticateUser({ email, password }) {
   }
 }
 
-async function generateToken({ id }) {
+async function generateToken({ user_id }) {
   return {
-    token: jwt.sign({ id: id }, JWT_SECRET),
+    token: jwt.sign({ id: user_id }, JWT_SECRET),
     message: "You're logged in!",
   };
 }

@@ -5,6 +5,17 @@ const dropTables = async () => {
   try {
     console.log('Starting to drop all tables...');
     await client.query(`
+    DROP TABLE IF EXISTS athlete_teams;
+    DROP TABLE IF EXISTS coach_teams;
+    DROP TABLE IF EXISTS teams;
+    DROP TABLE IF EXISTS maps;
+    DROP TABLE IF EXISTS lap_metrics;
+    DROP TABLE IF EXISTS laps;
+    DROP TABLE IF EXISTS activity_metrics;
+    DROP TABLE IF EXISTS metrics;
+    DROP TABLE IF EXISTS activities;
+    DROP TABLE IF EXISTS user_roles;
+    DROP TABLE IF EXISTS roles;
     DROP TABLE IF EXISTS users;
     `);
     console.log('Finished droppping all tables successfully!');
@@ -19,13 +30,98 @@ const createTables = async () => {
     console.log('Starting to create all tables...');
     await client.query(`
     CREATE TABLE users(
-      id SERIAL PRIMARY KEY,
+      user_id SERIAL PRIMARY KEY,
       email VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
       isVerified BOOLEAN DEFAULT false,
+      canEmail BOOLEAN DEFAULT true,
+      verificationString VARCHAR(255) NOT NULL,
       created_on TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE roles(
+      role_id SERIAL PRIMARY KEY,
+      name VARCHAR(255) UNIQUE NOT NULL
+    );
+
+    CREATE TABLE user_roles(
+      user_id INTEGER REFERENCES users(user_id),
+      role_id INTEGER REFERENCES roles(role_id),
+      UNIQUE(user_id, role_id)
+    );
+
+    CREATE TABLE activities(
+      activity_id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(user_id),
+      strava_id INTEGER UNIQUE NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      type VARCHAR(255) NOT NULL,
+      sport_type VARCHAR(255) NOT NULL,
+      description TEXT
+    );
+
+    CREATE TABLE metrics(
+      metric_id SERIAL PRIMARY KEY,
+      elapsed_time INTEGER NOT NULL,
+      moving_time INTEGER NOT NULL,
+      start_date TIMESTAMP,
+      distance INTEGER NOT NULL,
+      total_elevation_gain INTEGER NOT NULL,
+      average_speed INTEGER NOT NULL,
+      max_speed INTEGER NOT NULL,
+      average_cadence INTEGER NOT NULL,
+      has_heartrate BOOLEAN DEFAULT false,
+      elev_high INTEGER NOT NULL,
+      elev_low INTEGER NOT NULL,
+      calories INTEGER NOT NULL
+    );
+
+    CREATE TABLE activity_metrics(
+      activity_id INTEGER REFERENCES activities(activity_id),
+      metric_id INTEGER REFERENCES metrics(metric_id),
+      UNIQUE(activity_id, metric_id)
+      );
+
+    CREATE TABLE laps(
+      lap_id INTEGER PRIMARY KEY,
+      activity_id INTEGER REFERENCES activities(activity_id)
+    );
+
+    CREATE TABLE lap_metrics(
+      lap_id INTEGER REFERENCES laps(lap_id),
+      role_id INTEGER REFERENCES roles(role_id),
+      UNIQUE(lap_id, role_id)
+    );
+
+    CREATE TABLE maps(
+      map_id SERIAL PRIMARY KEY,
+      start_lat INTEGER NOT NULL,
+      start_lng INTEGER NOT NULL,
+      end_lat INTEGER NOT NULL,
+      end_lng INTEGER NOT NULL,
+      polyline TEXT,
+      summary_polyline TEXT,
+      activity_id INTEGER REFERENCES activities(activity_id)
+    );
+
+    CREATE TABLE teams(
+      team_id SERIAL PRIMARY KEY,
+      name VARCHAR(255) UNIQUE NOT NULL
+    );
+
+    CREATE TABLE coach_teams(
+      coach_id INTEGER REFERENCES users(user_id),
+      team_id INTEGER REFERENCES teams(team_id),
+      UNIQUE(coach_id, team_id)
+    );
+
+    CREATE TABLE athlete_teams(
+      athlete_id INTEGER REFERENCES users(user_id),
+      team_id INTEGER REFERENCES teams(team_id),
+      UNIQUE(athlete_id, team_id)
+    );
     `);
+
     console.log(
       'Finished creating all tables successfully! Now, to add some data!'
     );
@@ -38,16 +134,19 @@ const createTables = async () => {
 const createInitialUsers = async () => {
   console.log('Adding initial users to "Users" table...');
   try {
-    await createUser({ email: 'sean@sean.com', password: '123' });
+    await createUser({
+      email: 'sean@sean.com',
+      password: '123',
+      verificationString: 'replace this with a UUID later!',
+    });
     console.log('Finished adding users!');
   } catch (error) {
     throw error;
   }
 };
 
-const rebuildDB = async () => {
+(async () => {
   try {
-    await client.connect();
     await dropTables();
     await createTables();
     await createInitialUsers();
@@ -58,6 +157,4 @@ const rebuildDB = async () => {
     await client.end();
     console.log("Database has been rebuilt, and you're good to go!");
   }
-};
-
-rebuildDB();
+})();
