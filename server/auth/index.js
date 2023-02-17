@@ -1,8 +1,10 @@
 const router = require('express').Router();
 const axios = require('axios');
+const { v4: uuidv4 } = require('uuid');
 const BASE_URL = `http://localhost:5173`;
+const API_URL = `http://localhost:3000`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
-const { getUserById, createUser, updateUser } = require('../db');
+const { getUserById, createUser, updateUser, getUserByUUID } = require('../db');
 const {
   authenticateUser,
   sendEmail,
@@ -16,7 +18,33 @@ router.get('/me', async (req, res, next) => {
     res.status(200).send(user);
   } catch (error) {
     console.error(error);
-    throw error;
+    next(error);
+  }
+});
+
+// GET auth/verify/:verification_string
+router.get('/verify/:verification_string', async (req, res, next) => {
+  try {
+    const { params: verification_string } = req;
+
+    const user = await getUserByUUID(verification_string);
+
+    if (!user) {
+      next({
+        error: 'Error: Email Verification Failed',
+        name: 'Email Verification Failed',
+        message: 'Email Verification Failed. Please contact customer service.',
+        status: 401,
+      });
+    } else {
+      const verifiedUser = await updateUser(user.user_id, {
+        is_verified: true,
+      });
+
+      res.send(verifiedUser).status(200);
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -117,17 +145,26 @@ router.post('/signup', async (req, res, next) => {
   console.log('in auth/signup');
   try {
     const { email, password } = req.body;
+    // const profile_image = '/public/default-user-image.png';
+    // const verification_string = uuidv4();
 
-    const result = await createUser({ email, password });
+    const result = await createUser({
+      email,
+      password,
+    });
 
     if (result.token) {
       await sendEmail({
         to: email,
         from: 'knoxrunsapp@gmail.com',
         subject: 'KnoxRuns Account Verification',
-        text: `Thank you for signing up with KnoxRuns!
+        text: `
+        Thank you for signing up with KnoxRuns! To verify your account and see your activites, please click here:
+        ${API_URL}/auth/verify/${result.verification_string}
         `,
       });
+      console.log('auth/index/signup', result);
+      delete result.verification_string;
       res.status(200).send(result);
     } else {
       next(result);

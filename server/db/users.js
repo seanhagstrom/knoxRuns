@@ -1,18 +1,17 @@
 const client = require('./client');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { JWT_SECRET } = process.env;
-const { buildSetString } = require('../util');
+const { buildSetString } = require('../util/buildSetString');
 
 // Start Create User
-async function createUser({
-  email,
-  password,
-  verification_string,
-  profile_image,
-}) {
+async function createUser({ email, password }) {
   try {
+    const profile_image = '/public/default-user-image.png';
+    const verification_string = uuidv4();
+
     password = await bcrypt.hash(password, saltRounds);
 
     const {
@@ -22,7 +21,7 @@ async function createUser({
     INSERT INTO users(email, password, verification_string, profile_image)
     VALUES ($1, $2, $3, $4)
     ON CONFLICT (email) DO NOTHING
-    RETURNING user_id, email, is_verified;
+    RETURNING user_id, email, is_verified, verification_string ;
     `,
       [email, password, verification_string, profile_image]
     );
@@ -30,6 +29,7 @@ async function createUser({
     const createdUser = {
       token: jwt.sign({ id: user.user_id }, JWT_SECRET),
       message: "You're logged in!",
+      verification_string: user.verification_string,
     };
     console.log('createdUser in createUser', createdUser);
     return createdUser;
@@ -81,6 +81,25 @@ async function getUserByEmail({ email }) {
     throw error;
   }
 }
+async function getUserByUUID({ verification_string }) {
+  try {
+    console.log(verification_string);
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+    SELECT * FROM users
+    WHERE verification_string = $1
+    `,
+      [verification_string]
+    );
+    console.log('getUserByUUID: ', user);
+    return user;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 /*** End Get User Functions ***/
 
 /*** Start Update User  ***/
@@ -113,4 +132,5 @@ module.exports = {
   getUserById,
   getUserByEmail,
   updateUser,
+  getUserByUUID,
 };

@@ -1,7 +1,7 @@
 const { JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { getUserByEmail } = require('../db');
+const { getUserByEmail } = require('../db/users');
 
 async function authenticateUser({ email, password }) {
   try {

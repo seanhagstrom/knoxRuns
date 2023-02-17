@@ -149,8 +149,6 @@ const createInitialUsers = async () => {
     await createUser({
       email: 'sean@sean.com',
       password: '123',
-      verification_string: 'replace this with a UUID later!',
-      profile_image: '/public/default-user-image.png',
     });
     console.log('Finished adding users!');
   } catch (error) {
@@ -163,12 +161,6 @@ const createInitialUsers = async () => {
     await dropTables();
     await createTables();
     await createInitialUsers();
-    console.log('updating user: ');
-    const upatedUserObj = await updateUser(1, {
-      email: 'grim@sean.com',
-      profile_image: 'another image url',
-    });
-    console.log({ upatedUserObj });
   } catch (error) {
     console.error('Error during rebuildDB', error);
     throw error;
