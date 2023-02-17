@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { JWT_SECRET } = process.env;
-const { buildSetString } = require('../util/buildSetString');
+const { buildSetString } = require('../util');
 
 // Start Create User
 async function createUser({

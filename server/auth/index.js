@@ -3,9 +3,11 @@ const axios = require('axios');
 const BASE_URL = `http://localhost:5173`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
 const { getUserById, createUser, updateUser } = require('../db');
-const { generateRandomPassword } = require('../util/generateRandomPassword');
-const { authenticateUser } = require('../util/authenticateUser');
-const { sendEmail } = require('../util/sendEmail');
+const {
+  authenticateUser,
+  sendEmail,
+  generateRandomPassword,
+} = require('../util');
 
 // GET auth/me
 router.get('/me', async (req, res, next) => {
