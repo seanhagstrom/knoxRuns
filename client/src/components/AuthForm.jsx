@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import history from 'history/browser';
 import { authenticateUser } from '../api/auth';
 
-const URL = `http://www.strava.com/oauth/authorize?client_id=73695&response_type=code&redirect_uri=http://localhost:3000/auth/exchange_token&approval_prompt=force&scope=read_all,activity:read_all`;
+const URL = `http://www.strava.com/oauth/authorize?client_id=73695&response_type=code&redirect_uri=http://localhost:3000/auth/exchange_token/1&approval_prompt=force&scope=read_all,activity:read_all`;
 
 const AuthForm = () => {
   let location = useLocation();
@@ -31,8 +31,9 @@ const AuthForm = () => {
       const password = event.target.password.value;
 
       const data = await authenticateUser({ email, password, formname });
-      console.log(data);
-      if (data.token) {
+      // console.log(data);
+      if (data.user_id) {
+        // changed from data.token
         // history.push(URL);
         navigate('/me');
       }

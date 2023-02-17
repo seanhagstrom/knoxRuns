@@ -16,10 +16,11 @@ export const authenticateUser = async ({ email, password, formname: name }) => {
     });
 
     const data = await response.json();
+
     if (data.token) {
       // Temporary to get auth working.
       localStorage.setItem('token', data.token);
-      return data;
+      return await getMe();
     }
     return;
   } catch (error) {

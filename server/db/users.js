@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { JWT_SECRET } = process.env;
-const { authenticateUser } = require('../util/authenticateUser');
 const { buildSetString } = require('../util/buildSetString');
 
 // Start Create User

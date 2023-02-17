@@ -2,14 +2,9 @@ const router = require('express').Router();
 const axios = require('axios');
 const BASE_URL = `http://localhost:5173`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
-const {
-  authenticateUser,
-  getUserById,
-  createUser,
-  getUserByToken,
-  updateUser,
-} = require('../db');
+const { getUserById, createUser, updateUser } = require('../db');
 const { generateRandomPassword } = require('../util/generateRandomPassword');
+const { authenticateUser } = require('../util/authenticateUser');
 const { sendEmail } = require('../util/sendEmail');
 
 // GET auth/me
@@ -25,7 +20,7 @@ router.get('/me', async (req, res, next) => {
 
 // GET auth/exchange_token
 router.get('/exchange_token/:id', async (req, res, next) => {
-  console.log(req.params);
+  // console.log(req.params);
   const {
     query: { code },
     params: { id },
@@ -66,6 +61,7 @@ router.get('/exchange_token/:id', async (req, res, next) => {
           sex,
           weight,
           profile_medium: profile_image,
+          bio,
         },
       } = data;
 
@@ -81,21 +77,14 @@ router.get('/exchange_token/:id', async (req, res, next) => {
         sex,
         weight,
         profile_image,
+        bio,
       };
 
       await updateUser(id, fields);
       res.redirect(`${BASE_URL}/me`);
-    } else if (user && user.is_verified) {
+    } else if (user && user.strava_id) {
       res.redirect(`${BASE_URL}/me`);
     } else {
-      // const password = generateRandomPassword();
-
-      // const userToCreate = {
-      //   username,
-      //   password,
-      // };
-
-      // const userCreated = await createUser(userToCreate);
       res.redirect(`${BASE_URL}/register`);
     }
   } catch (error) {
@@ -108,7 +97,9 @@ router.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    console.log('{ email, password } in auth/index', { email, password });
     const result = await authenticateUser({ email, password });
+    console.log('result in auth/index', result);
     if (result.token) {
       res.status(200).send(result);
     } else {
