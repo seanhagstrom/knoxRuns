@@ -65,7 +65,7 @@ const createTables = async () => {
     CREATE TABLE activities(
       activity_id SERIAL PRIMARY KEY,
       user_id INTEGER REFERENCES users(user_id),
-      strava_id INTEGER UNIQUE NOT NULL,
+      strava_activity_id INTEGER UNIQUE NOT NULL,
       name VARCHAR(255) NOT NULL,
       type VARCHAR(255) NOT NULL,
       sport_type VARCHAR(255) NOT NULL,
@@ -101,8 +101,8 @@ const createTables = async () => {
 
     CREATE TABLE lap_metrics(
       lap_id INTEGER REFERENCES laps(lap_id),
-      role_id INTEGER REFERENCES roles(role_id),
-      UNIQUE(lap_id, role_id)
+      metric_id INTEGER REFERENCES metrics(metric_id),
+      UNIQUE(lap_id, metric_id)
     );
 
     CREATE TABLE maps(
