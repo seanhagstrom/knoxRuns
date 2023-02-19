@@ -31,11 +31,14 @@ const AuthForm = () => {
       const password = event.target.password.value;
 
       const data = await authenticateUser({ email, password, formname });
-      // console.log(data);
-      if (data.user_id) {
+      console.log(data);
+      if (data.is_verified) {
         // changed from data.token
-        // history.push(URL);
         navigate('/me');
+      } else if (!data.is_verified) {
+        navigate('/next-steps');
+      } else {
+        console.log('add error component');
       }
     } catch (error) {
       console.error(error);

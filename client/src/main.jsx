@@ -6,6 +6,7 @@ import Activities from './components/Activities';
 import Activity from './components/Activity';
 import App from './components/App';
 import AuthForm from './components/AuthForm';
+import NextSteps from './components/NextSteps';
 import Profile from './components/Profile';
 import Welcome from './components/Welcome';
 import './styles/index.css';
@@ -14,7 +15,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    loader: getMe,
+    // loader: getMe,
     children: [
       {
         path: 'welcome',
@@ -27,6 +28,14 @@ export const router = createBrowserRouter([
       {
         path: 'signup',
         element: <AuthForm />,
+      },
+      {
+        path: 'next-steps',
+        element: <NextSteps />,
+      },
+      {
+        path: 'next-steps/:verification_string',
+        element: <NextSteps />,
       },
       {
         path: 'me',

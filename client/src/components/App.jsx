@@ -9,19 +9,25 @@ import {
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Welcome from './Welcome';
+import { getMe } from '../api/auth';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.token);
   const navigate = useNavigate();
-  const user = useLoaderData();
+  // const user = useLoaderData();
   let location = useLocation();
 
   useEffect(() => {
-    if (user) {
-      navigate('me');
-    } else {
-      navigate('welcome');
-    }
+    async () => {
+      const user = await getMe();
+      if (user && user.is_verified) {
+        navigate('me');
+      } else if (user && !user.is_verified) {
+        navigate('next-steps');
+      } else {
+        navigate('welcome');
+      }
+    };
   }, []);
 
   return (
