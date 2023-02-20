@@ -1,8 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = [
-  { testActivityOne: 'this is the initial state in activities' },
-  { testActivityTwo: 'this is the initial state in activities' },
+  {
+    id: 1,
+    testDescription:
+      'this is the initial state in activities for activity number 1!',
+  },
+  {
+    id: 2,
+    testDescription:
+      'this is the initial state in activities for activity number 2!',
+  },
 ];
 
 const activitiesSlice = createSlice({
