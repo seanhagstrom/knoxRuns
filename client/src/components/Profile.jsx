@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getMe } from '../api/auth';
+import { useSelector } from 'react-redux';
 
 function Profile() {
+  const userFromRTK = useSelector((state) => state.user);
+
+  console.log({ userFromRTK });
+
   const [isloading, setIsLoading] = useState(true);
   const [user, setUser] = useState({});
 
-  const { email, profile_image, firstname, lastname } = user;
+  const { email, profile_image, firstname, lastname } = userFromRTK;
 
   useEffect(() => {
     (async () => {
@@ -24,7 +29,7 @@ function Profile() {
         </div>
       ) : (
         <>
-          {user.firstname ? (
+          {userFromRTK.firstname ? (
             <div>
               <h1>
                 Hi, {firstname} {lastname}
