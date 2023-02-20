@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
-function Activity() {
+function Activity({ singleActivity = {} }) {
+  const { activityId } = useParams();
+  const [activity, setActivity] = useState(singleActivity);
+
+  const activityToSet = useSelector((state) =>
+    state.activities.find((activity) => activity.id === +activityId)
+  );
+
+  useEffect(() => {
+    if (activityId) {
+      setActivity(activityToSet);
+    }
+  }, [activity]);
+
   return (
-    <div>
-      <h1>Activity Nested in Activities</h1>
-    </div>
+    <>
+      {activity.id ? (
+        <article key={activity.id}>
+          <p>{activity.testDescription}</p>
+        </article>
+      ) : (
+        <div>Can't find that activity</div>
+      )}
+    </>
   );
 }
 

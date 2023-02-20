@@ -46,12 +46,10 @@ export const router = createBrowserRouter([
       {
         path: 'activities',
         element: <Activities />,
-        children: [
-          {
-            path: ':activityId',
-            element: <Activity />,
-          },
-        ],
+      },
+      {
+        path: 'activities/:activityId',
+        element: <Activity />,
       },
     ],
   },
