@@ -9,7 +9,6 @@ const { buildSetString } = require('../util/buildSetString');
 // Start Create User
 async function createUser({ email, password }) {
   try {
-    const profile_image = '/public/default-user-image.png';
     const verification_string = uuidv4();
 
     password = await bcrypt.hash(password, saltRounds);
@@ -18,12 +17,12 @@ async function createUser({ email, password }) {
       rows: [user],
     } = await client.query(
       `
-    INSERT INTO users(email, password, verification_string, profile_image)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO users(email, password, verification_string)
+    VALUES ($1, $2, $3)
     ON CONFLICT (email) DO NOTHING
     RETURNING user_id, email, is_verified, verification_string ;
     `,
-      [email, password, verification_string, profile_image]
+      [email, password, verification_string]
     );
 
     const createdUser = {
@@ -40,6 +39,7 @@ async function createUser({ email, password }) {
 }
 
 /*** Start Get User Functions ***/
+/*** Consolidate these functions into findOne(field = {}) ***/
 async function getUserById({ id }) {
   try {
     if (!id) {
