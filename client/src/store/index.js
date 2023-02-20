@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './authSlice';
+import user from './authSlice';
+import activities from './activitiesSlice';
 const store = configureStore({
   reducer: {
-    user: authReducer,
+    user,
+    activities,
   },
 });
-console.log(authReducer.initialState);
 
 export default store;
