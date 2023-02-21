@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const axios = require('axios');
-const { v4: uuidv4 } = require('uuid');
 const BASE_URL = `http://localhost:5173`;
 const API_URL = `http://localhost:3000`;
 const STRAVA_AUTH_URL = `https://www.strava.com/oauth/token`;
@@ -10,7 +9,7 @@ const {
   authenticateUser,
   sendEmail,
   accessTokenExpired,
-  generateRandomPassword,
+  getInititialStravaActivities,
 } = require('../util');
 
 // GET auth/me
@@ -19,7 +18,7 @@ router.get('/me', async (req, res, next) => {
     const { user } = req;
     const { expires_at, refresh_token } = user;
     const replaceToken = accessTokenExpired(expires_at);
-    console.log(replaceToken);
+    console.log(user);
     if (accessTokenExpired(expires_at)) {
       const { data } = await axios.post(
         STRAVA_AUTH_URL,
@@ -59,6 +58,7 @@ router.get('/exchange_token/:id', async (req, res, next) => {
   const {
     query: { code },
     params: { id },
+    user: { user_id },
   } = req;
   try {
     const { data } = await axios.post(
@@ -118,6 +118,7 @@ router.get('/exchange_token/:id', async (req, res, next) => {
       };
 
       await updateUser(id, fields);
+      await getInititialStravaActivities({ access_token, user_id });
       res.redirect(`${BASE_URL}/me`);
     } else if (user && user.strava_id) {
       res.redirect(`${BASE_URL}/me`);

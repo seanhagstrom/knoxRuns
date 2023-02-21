@@ -5,4 +5,6 @@ module.exports = {
   ...require('./generateRandomPassword'),
   ...require('./sendEmail'),
   ...require('./accessTokenExpired'),
+  ...require('./getInitialStravaActivities'),
+  ...require('./addInitialActivitiesToDb'),
 };

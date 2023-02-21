@@ -1,5 +1,7 @@
 const client = require('./client');
+const seedActivities = require('../../resources/sample-activities.json');
 const { createUser, updateUser } = require('./users');
+const { addInitialActivitiesToDb } = require('../util');
 
 const dropTables = async () => {
   try {
@@ -66,7 +68,7 @@ const createTables = async () => {
     CREATE TABLE activities(
       activity_id SERIAL PRIMARY KEY,
       user_id INTEGER REFERENCES users(user_id),
-      strava_activity_id INTEGER UNIQUE NOT NULL,
+      strava_activity_id VARCHAR(255) UNIQUE NOT NULL,
       name VARCHAR(255) NOT NULL,
       type VARCHAR(255) NOT NULL,
       sport_type VARCHAR(255) NOT NULL,
@@ -151,6 +153,7 @@ const createInitialUsers = async () => {
       email: 'sean@sean.com',
       password: '123',
     });
+    await createUser({ email: 'seanhagstrom1@gmail.com', password: '123' });
     console.log('Finished adding users!');
   } catch (error) {
     throw error;
@@ -162,6 +165,26 @@ const createInitialUsers = async () => {
     await dropTables();
     await createTables();
     await createInitialUsers();
+    await updateUser(2, {
+      strava_id: 14994492,
+      username: 'sean_hagstrom',
+      firstname: 'Sean',
+      lastname: 'Hagstrom',
+      is_verified: true,
+      email_allowed: true,
+      verification_string: '3aa837ff-105b-4357-8e8c-d94319917006',
+      refresh_token: '0faccecbc79b7e4f590f0099c9ca68aaca809e71',
+      access_token: '7b63b50ff62eed732abf19eed5f706bd117cca38',
+      expires_at: 1677019649,
+      bio: null,
+      city: 'Knoxville ',
+      state: 'Tennessee ',
+      sex: 'M',
+      weight: '61.235',
+      profile_image:
+        'https://graph.facebook.com/10156899548270215/picture?height=256&width=256',
+    });
+    await addInitialActivitiesToDb(2, seedActivities);
   } catch (error) {
     console.error('Error during rebuildDB', error);
     throw error;

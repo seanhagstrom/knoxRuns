@@ -31,5 +31,6 @@ router.get('/health', async (req, res, next) => {
 });
 
 router.use('/users', require('./users'));
+router.use('/activities', require('./activities'));
 
 module.exports = router;
