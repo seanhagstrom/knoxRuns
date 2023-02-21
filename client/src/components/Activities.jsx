@@ -4,15 +4,18 @@ import { useSelector } from 'react-redux';
 import Activity from './Activity';
 
 function Activities() {
-  const activities = useSelector((state) => state.activities);
-  console.log(activities);
+  const activities = useSelector((state) => state.activities.data);
+  console.log({ activities });
   return (
     <>
       {activities.length ? (
         <section>
           <h1>Activities</h1>
           {activities.map((activity, index) => (
-            <Link key={activity.id} to={`/activities/${activity.id}`}>
+            <Link
+              key={activity.activity_id}
+              to={`/activities/${activity.activity_id}`}
+            >
               <Activity singleActivity={activity} />
             </Link>
           ))}

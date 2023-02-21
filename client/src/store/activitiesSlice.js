@@ -1,22 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = [
-  {
-    id: 1,
-    testDescription:
-      'this is the initial state in activities for activity number 1!',
-  },
-  {
-    id: 2,
-    testDescription:
-      'this is the initial state in activities for activity number 2!',
-  },
-];
-
 const activitiesSlice = createSlice({
   name: 'activities',
-  initialState,
-  reducers: {},
+  initialState: {
+    data: [{ activity_id: 1 }, { activity_id: 2 }, { activity_id: 3 }],
+    status: 'idle',
+    error: null,
+  },
+  reducers: {
+    setActivities: {
+      reducer(state, action) {
+        action.payload;
+      },
+    },
+  },
 });
 
 export default activitiesSlice.reducer;
