@@ -3,6 +3,7 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const BASE_URL = `http://localhost:5173`;
 const API_URL = `http://localhost:3000`;
+const STRAVA_AUTH_URL = `https://www.strava.com/oauth/token`;
 const { VITE_STRAVA_CLIENT_ID, VITE_STRAVA_CLIENT_SECRET } = process.env;
 const { getUserById, createUser, updateUser, getUserByUUID } = require('../db');
 const {
@@ -21,7 +22,7 @@ router.get('/me', async (req, res, next) => {
     console.log(replaceToken);
     if (accessTokenExpired(expires_at)) {
       const { data } = await axios.post(
-        `https://www.strava.com/oauth/token`,
+        STRAVA_AUTH_URL,
         {
           client_id: VITE_STRAVA_CLIENT_ID,
           client_secret: VITE_STRAVA_CLIENT_SECRET,
@@ -61,7 +62,7 @@ router.get('/exchange_token/:id', async (req, res, next) => {
   } = req;
   try {
     const { data } = await axios.post(
-      `https://www.strava.com/oauth/token`,
+      STRAVA_AUTH_URL,
       {
         client_id: VITE_STRAVA_CLIENT_ID,
         client_secret: VITE_STRAVA_CLIENT_SECRET,
@@ -178,8 +179,6 @@ router.post('/signup', async (req, res, next) => {
   console.log('in auth/signup');
   try {
     const { email, password } = req.body;
-    // const profile_image = '/public/default-user-image.png';
-    // const verification_string = uuidv4();
 
     const result = await createUser({
       email,
