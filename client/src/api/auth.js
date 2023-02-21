@@ -40,7 +40,7 @@ export const verifyUser = async ({ verification_string }) => {
         verification_string,
       }),
     });
-    console.log('hit', response);
+    // console.log('hit', response);
     const data = await response.json();
     console.log('hit', data);
 

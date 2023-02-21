@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { verifyUser } from '../api/auth';
+import { useSelector, useDispatch } from 'react-redux';
+import { currentUser, updateUser } from '../store/authSlice';
 
 function NextSteps() {
-  const [user, setUser] = useState({});
+  const dispatch = useDispatch();
+  const user = useSelector(currentUser);
+  // const [user, setUser] = useState({});
   const { verification_string } = useParams();
   const [isloading, setIsLoading] = useState(true);
   // const [isVerified, setIsVerified] = useState(user.is_verified);
@@ -20,7 +24,7 @@ function NextSteps() {
       const verify = async () => {
         const verifiedUser = await verifyUser({ verification_string });
         console.log(verifiedUser);
-        setUser(verifiedUser);
+        // dispatch(updateUser(verifiedUser));
         setIsLoading(false);
         setStravaUrl(
           `http://www.strava.com/oauth/authorize?client_id=73695&response_type=code&redirect_uri=http://localhost:3000/auth/exchange_token/${verifiedUser.user_id}&approval_prompt=force&scope=read_all,activity:read_all`
@@ -28,7 +32,7 @@ function NextSteps() {
       };
       verify();
     }
-  }, []);
+  }, [user]);
 
   return (
     <div>

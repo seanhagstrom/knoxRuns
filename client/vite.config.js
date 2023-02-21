@@ -11,5 +11,5 @@ export default defineConfig({
     },
   },
   envDir: '../',
-  envPrefix: 'VITE_',
+  // envPrefix: 'VITE_',
 });
