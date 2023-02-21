@@ -3,7 +3,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 export const authenticateUser = createAsyncThunk(
   'auth/authenticateUser',
   async ({ email, password, formname: name }) => {
-    console.log(`in src/api/auth authenticateUser with formname: ${name}`);
     try {
       const formResponse = await fetch(`auth/${name}`, {
         method: 'POST',
@@ -18,7 +17,6 @@ export const authenticateUser = createAsyncThunk(
 
       const formData = await formResponse.json();
 
-      console.log(formData);
       if (formData.token) {
         // Temporary to get auth working.
         localStorage.setItem('token', formData.token);

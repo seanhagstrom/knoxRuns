@@ -24,7 +24,7 @@ const AuthForm = () => {
       } else if (user.user_id && !user.is_verified) {
         navigate('/next-steps');
       } else {
-        console.log('add error component');
+        console.log('AuthForm: add error and loading component');
       }
     } catch (error) {
       console.error(error);
@@ -35,6 +35,7 @@ const AuthForm = () => {
 
   return (
     <div>
+      <h1>Some photo here or carousel</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor='email'>Email</label>
