@@ -31,7 +31,7 @@ const createTables = async () => {
     await client.query(`
     CREATE TABLE users(
       user_id SERIAL PRIMARY KEY,
-      strava_id int,
+      strava_id INTEGER,
       email VARCHAR(255) UNIQUE NOT NULL,
       password VARCHAR(255) NOT NULL,
       username VARCHAR(255),
@@ -42,6 +42,7 @@ const createTables = async () => {
       verification_string VARCHAR(255) NOT NULL,
       refresh_token VARCHAR(255),
       access_token VARCHAR(255),
+      expires_at INTEGER,
       bio TEXT,
       city VARCHAR(255),
       state VARCHAR(255),

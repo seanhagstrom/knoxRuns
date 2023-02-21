@@ -8,14 +8,44 @@ const { getUserById, createUser, updateUser, getUserByUUID } = require('../db');
 const {
   authenticateUser,
   sendEmail,
+  accessTokenExpired,
   generateRandomPassword,
 } = require('../util');
 
 // GET auth/me
 router.get('/me', async (req, res, next) => {
   try {
-    const user = req.user;
-    res.status(200).send(user);
+    const { user } = req;
+    const { expires_at, refresh_token } = user;
+    const replaceToken = accessTokenExpired(expires_at);
+    console.log(replaceToken);
+    if (accessTokenExpired(expires_at)) {
+      const { data } = await axios.post(
+        `https://www.strava.com/oauth/token`,
+        {
+          client_id: VITE_STRAVA_CLIENT_ID,
+          client_secret: VITE_STRAVA_CLIENT_SECRET,
+          grant_type: 'refresh_token',
+          refresh_token,
+        },
+        {
+          headers: {
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('this is data from refresh token: ', data);
+      const fields = {
+        refresh_token: data.refresh_token,
+        access_token: data.access_token,
+        expires_at: data.expires_at,
+      };
+      const updatedUser = await updateUser(user.user_id, fields);
+      res.status(200).send(updatedUser);
+    } else {
+      res.status(200).send(user);
+    }
   } catch (error) {
     console.error(error);
     next(error);
@@ -55,6 +85,7 @@ router.get('/exchange_token/:id', async (req, res, next) => {
       const {
         refresh_token,
         access_token,
+        expires_at,
         athlete: {
           id: strava_id,
           username,
@@ -72,6 +103,7 @@ router.get('/exchange_token/:id', async (req, res, next) => {
       const fields = {
         refresh_token,
         access_token,
+        expires_at,
         strava_id,
         username,
         firstname,
