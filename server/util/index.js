@@ -4,4 +4,5 @@ module.exports = {
   ...require('./buildSetString'),
   ...require('./generateRandomPassword'),
   ...require('./sendEmail'),
+  ...require('./accessTokenExpired'),
 };
