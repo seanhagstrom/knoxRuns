@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Activity from './Activity';
+import { setActivities } from '../store/activitiesSlice';
 
 function Activities() {
+  const dispatch = useDispatch();
   const activities = useSelector((state) => state.activities.data);
+  const status = useSelector((state) => state.activities.status);
   console.log({ activities });
+
+  useEffect(() => {
+    if (status === 'idle') dispatch(setActivities());
+  }, [status, dispatch]);
   return (
     <>
       {activities.length ? (
