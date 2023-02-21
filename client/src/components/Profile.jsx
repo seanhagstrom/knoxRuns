@@ -1,35 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { getMe } from '../api/auth';
 import { useSelector } from 'react-redux';
 
 function Profile() {
-  const userFromRTK = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user);
+  const userStatus = useSelector((state) => state.user.status);
 
-  console.log({ userFromRTK });
+  const { email, profile_image, firstname, lastname } = user;
 
-  const [isloading, setIsLoading] = useState(true);
-  const [user, setUser] = useState({});
-
-  const { email, profile_image, firstname, lastname } = userFromRTK;
-
-  useEffect(() => {
-    (async () => {
-      const data = await getMe();
-      setUser(data);
-      setIsLoading(false);
-    })();
-  }, []);
-  console.log(isloading);
-  console.log(user);
   return (
     <>
-      {isloading ? (
+      {userStatus === 'loading' ? (
         <div>
           <h1>Loading....</h1>
         </div>
       ) : (
         <>
-          {userFromRTK.firstname ? (
+          {user.firstname ? (
             <div>
               <h1>
                 Hi, {firstname} {lastname}

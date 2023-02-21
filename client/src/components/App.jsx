@@ -1,34 +1,31 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import '../styles/App.css';
-import {
-  Outlet,
-  useLoaderData,
-  useNavigate,
-  useLocation,
-} from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import Welcome from './Welcome';
-import { getMe } from '../api/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { getMe } from '../store/authSlice';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.token);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+
   const navigate = useNavigate();
-  // const user = useLoaderData();
   let location = useLocation();
 
   useEffect(() => {
-    async () => {
-      const user = await getMe();
-      if (user && user.is_verified) {
-        navigate('me');
-      } else if (user && !user.is_verified) {
-        navigate('next-steps');
-      } else {
-        navigate('welcome');
-      }
-    };
+    dispatch(getMe());
   }, []);
+
+  useEffect(() => {
+    if (user && user.is_verified) {
+      navigate('me');
+    } else if (user && !user.is_verified) {
+      navigate('next-steps');
+    } else {
+      navigate('welcome');
+    }
+  }, [user]);
 
   return (
     <div>

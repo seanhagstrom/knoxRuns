@@ -1,28 +1,96 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-const initialState = {
-  bio: null,
-  city: 'Knoxville ',
-  created_on: '2023-02-18T22:43:57.293Z',
-  email: 'sean@sean.com',
-  email_allowed: true,
-  firstname: 'Trail',
-  is_verified: true,
-  lastname: 'Runner',
-  profile_image:
-    'https://images.pexels.com/photos/12918264/pexels-photo-12918264.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  sex: 'M',
-  state: 'Tennessee ',
-  user_id: 1,
-  username: 'sean_hagstrom',
-  verification_string: 'some string here :)',
-  weight: '61.235',
-};
+export const login = createAsyncThunk(
+  'auth/authenticateUser',
+  async ({ email, password, formname: name }) => {
+    console.log(`in src/api/auth authenticateUser with formname: ${name}`);
+    try {
+      const response = await fetch(`auth/${name}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.token) {
+        // Temporary to get auth working.
+        localStorage.setItem('token', data.token);
+        return await getMe();
+      }
+      return;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
+
+export const getMe = createAsyncThunk('auth/setAuth', async () => {
+  try {
+    const token = localStorage.token;
+
+    if (!token) {
+      return null;
+    }
+    const response = await fetch(`auth/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+});
+
+export const logout = createAsyncThunk('auth/logout', async () => {
+  try {
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
-  reducers: {},
+  initialState: {
+    user: {},
+    status: 'idle',
+    error: null,
+  },
+  reducers: {
+    setAuth: {
+      reducer(state, action) {
+        action.payload;
+      },
+    },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(getMe.pending, (state, action) => {
+        state.status = 'loading';
+      })
+      .addCase(getMe.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload;
+      })
+      .addCase(getMe.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error;
+      });
+  },
 });
+
+export const { setAuth } = authSlice.actions;
 
 export default authSlice.reducer;
