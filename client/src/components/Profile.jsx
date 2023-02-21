@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { currentUser } from '../store/authSlice';
 
 function Profile() {
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector(currentUser);
   const userStatus = useSelector((state) => state.user.status);
 
   const { email, profile_image, firstname, lastname } = user;

@@ -4,11 +4,11 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMe } from '../store/authSlice';
+import { getMe, currentUser } from '../store/authSlice';
 
 function App() {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector(currentUser);
 
   const navigate = useNavigate();
   let location = useLocation();

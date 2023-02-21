@@ -1,11 +1,11 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { authenticateUser } from '../store/authSlice';
+import { authenticateUser, currentUser } from '../store/authSlice';
 
 const AuthForm = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector(currentUser);
   let location = useLocation();
   let navigate = useNavigate();
 
