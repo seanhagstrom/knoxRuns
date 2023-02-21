@@ -20,9 +20,9 @@ function App() {
   console.log(user);
 
   useEffect(() => {
-    if (user && !!user.is_verified) {
+    if (user.user_id && user.is_verified) {
       navigate('me');
-    } else if (user && !!user.is_verified) {
+    } else if (user.user_id && !user.is_verified) {
       navigate('next-steps');
     } else {
       navigate('welcome');

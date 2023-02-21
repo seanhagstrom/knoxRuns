@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-export const login = createAsyncThunk(
+export const authenticateUser = createAsyncThunk(
   'auth/authenticateUser',
   async ({ email, password, formname: name }) => {
     console.log(`in src/api/auth authenticateUser with formname: ${name}`);
     try {
-      const response = await fetch(`auth/${name}`, {
+      const formResponse = await fetch(`auth/${name}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -16,14 +16,27 @@ export const login = createAsyncThunk(
         }),
       });
 
-      const data = await response.json();
+      const formData = await formResponse.json();
 
-      if (data.token) {
+      console.log(formData);
+      if (formData.token) {
         // Temporary to get auth working.
-        localStorage.setItem('token', data.token);
-        return await getMe();
+        localStorage.setItem('token', formData.token);
+
+        const response = await fetch(`auth/me`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${formData.token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        return data;
+      } else {
+        return {};
       }
-      return;
     } catch (error) {
       console.error(error);
     }
@@ -62,6 +75,11 @@ const authSlice = createSlice({
     error: null,
   },
   reducers: {
+    authenticateUser: {
+      reducer(state, action) {
+        action.payload;
+      },
+    },
     setAuth: {
       reducer(state, action) {
         action.payload;
@@ -83,6 +101,17 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(getMe.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error;
+      })
+      .addCase(authenticateUser.pending, (state, action) => {
+        state.status = 'loading';
+      })
+      .addCase(authenticateUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload;
+      })
+      .addCase(authenticateUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error;
       });

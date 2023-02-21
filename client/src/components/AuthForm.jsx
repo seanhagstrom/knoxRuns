@@ -1,27 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import history from 'history/browser';
-import { authenticateUser } from '../api/auth';
-
-const URL = `http://www.strava.com/oauth/authorize?client_id=73695&response_type=code&redirect_uri=http://localhost:3000/auth/exchange_token/1&approval_prompt=force&scope=read_all,activity:read_all`;
+import { useDispatch, useSelector } from 'react-redux';
+import { authenticateUser } from '../store/authSlice';
 
 const AuthForm = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
   let location = useLocation();
   let navigate = useNavigate();
 
-  console.log('This is my local: ', location.pathname);
-  // let params = new URLSearchParams(location.search);
-  // let code = params.get('code');
-  // console.log(code);
-
-  // useEffect(() => {
-  //   if (code) {
-  //     (async () => {
-  //       const lotsOfData = await stravaAuth(code);
-  //       console.log(lotsOfData);
-  //     })();
-  //   }
-  // }, [code]);
   let formname = location.pathname === '/login' ? 'login' : 'signup';
 
   const handleSubmit = async (event) => {
@@ -30,12 +17,11 @@ const AuthForm = () => {
       const email = event.target.email.value;
       const password = event.target.password.value;
 
-      const data = await authenticateUser({ email, password, formname });
-      console.log(data);
-      if (data.is_verified) {
-        // changed from data.token
+      dispatch(authenticateUser({ email, password, formname }));
+
+      if (user.user_id && user.is_verified) {
         navigate('/me');
-      } else if (!data.is_verified) {
+      } else if (user.user_id && !user.is_verified) {
         navigate('/next-steps');
       } else {
         console.log('add error component');
