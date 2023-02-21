@@ -35,7 +35,7 @@ export const getMe = createAsyncThunk('auth/setAuth', async () => {
     const token = localStorage.token;
 
     if (!token) {
-      return null;
+      return {};
     }
     const response = await fetch(`auth/me`, {
       method: 'GET',
@@ -54,13 +54,6 @@ export const getMe = createAsyncThunk('auth/setAuth', async () => {
   }
 });
 
-export const logout = createAsyncThunk('auth/logout', async () => {
-  try {
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -72,6 +65,11 @@ const authSlice = createSlice({
     setAuth: {
       reducer(state, action) {
         action.payload;
+      },
+    },
+    logoutUser: {
+      reducer(state, action) {
+        state.user = action.payload;
       },
     },
   },
@@ -91,6 +89,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuth } = authSlice.actions;
+export const { logoutUser } = authSlice.actions;
 
 export default authSlice.reducer;

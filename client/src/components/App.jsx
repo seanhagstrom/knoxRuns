@@ -17,10 +17,12 @@ function App() {
     dispatch(getMe());
   }, []);
 
+  console.log(user);
+
   useEffect(() => {
-    if (user && user.is_verified) {
+    if (user && !!user.is_verified) {
       navigate('me');
-    } else if (user && !user.is_verified) {
+    } else if (user && !!user.is_verified) {
       navigate('next-steps');
     } else {
       navigate('welcome');

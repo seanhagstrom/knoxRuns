@@ -1,10 +1,14 @@
 import React from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../store/authSlice';
 
 function Navbar() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    dispatch(logoutUser({}));
     delete localStorage.token;
     navigate('/welcome');
   };
