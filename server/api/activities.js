@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const axios = require('axios');
-const { createActivity, getActivitiesByUserId } = require('../db');
+const { getActivitiesByUserId } = require('../db');
 const sampleActivities = require('../../resources/sample-activities.json');
 const STRAVA_ACTIVITIES_URL =
   'https://www.strava.com/api/v3/athlete/activities';
@@ -9,7 +9,7 @@ const STRAVA_ACTIVITIES_URL =
 router.get('/', async (req, res, next) => {
   try {
     const {
-      user: { access_token, user_id },
+      user: { user_id },
     } = req;
 
     /***  initially needed to get real activity data ***/
