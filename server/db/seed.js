@@ -2,6 +2,7 @@ const client = require('./client');
 const seedActivities = require('../../resources/sample-activities.json');
 const { createUser, updateUser } = require('./users');
 const { addInitialActivitiesToDb } = require('../util');
+const { createRole } = require('./roles');
 
 const dropTables = async () => {
   try {
@@ -160,11 +161,25 @@ const createInitialUsers = async () => {
   }
 };
 
+const createInitialRoles = async () => {
+  console.log('Creating initial roles to the "Roles" table...');
+  try {
+    const rolesToAdd = ['athlete', 'coach', 'admin'];
+    for (const name of rolesToAdd) {
+      await createRole({ name });
+    }
+    console.log('Finished creating roles!');
+  } catch (error) {
+    throw error;
+  }
+};
+
 (async () => {
   try {
     await dropTables();
     await createTables();
     await createInitialUsers();
+    await createInitialRoles();
     await updateUser(2, {
       strava_id: 14994492,
       username: 'sean_hagstrom',
