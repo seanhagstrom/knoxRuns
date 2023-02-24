@@ -81,15 +81,17 @@ const createTables = async () => {
       elapsed_time INTEGER NOT NULL,
       moving_time INTEGER NOT NULL,
       start_date TIMESTAMP,
-      distance INTEGER NOT NULL,
-      total_elevation_gain INTEGER NOT NULL,
-      average_speed INTEGER NOT NULL,
-      max_speed INTEGER NOT NULL,
-      average_cadence INTEGER NOT NULL,
+      distance NUMERIC(100, 2) NOT NULL,
+      total_elevation_gain NUMERIC(10, 1),
+      average_speed NUMERIC(10, 3) NOT NULL,
+      max_speed NUMERIC(10, 3) NOT NULL,
+      average_cadence NUMERIC(4, 1) NOT NULL,
       has_heartrate BOOLEAN DEFAULT false,
-      elev_high INTEGER NOT NULL,
-      elev_low INTEGER NOT NULL,
-      calories INTEGER NOT NULL
+      average_heartrate NUMERIC(4, 1),
+      max_heartrate NUMERIC(4, 1),
+      elev_high NUMERIC(10, 1) NOT NULL,
+      elev_low NUMERIC(10, 1) NOT NULL,
+      calories INTEGER
     );
 
     CREATE TABLE activity_metrics(
