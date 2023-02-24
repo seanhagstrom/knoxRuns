@@ -18,7 +18,7 @@ async function createMetric({
 }) {
   try {
     const {
-      rows: [activity],
+      rows: [metric],
     } = await client.query(
       `
     INSERT INTO metrics( elapsed_time,
@@ -56,7 +56,7 @@ async function createMetric({
       ]
     );
 
-    return activity;
+    return metric;
   } catch (error) {
     console.error(error);
     throw error;
