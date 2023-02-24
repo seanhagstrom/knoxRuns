@@ -68,15 +68,17 @@ const addInitialActivitiesToDb = async (user_id, activities) => {
 
       await addMetricsToActivity({ activity_id, metric_id });
 
-      await createMap({
-        start_lat,
-        start_lng,
-        end_lat,
-        end_lng,
-        polyline,
-        summary_polyline,
-        activity_id,
-      });
+      if (start_latlng || end_latlng || polyline || summary_polyline) {
+        await createMap({
+          start_lat,
+          start_lng,
+          end_lat,
+          end_lng,
+          polyline,
+          summary_polyline,
+          activity_id,
+        });
+      }
     }
   } catch (error) {
     console.error(error);
