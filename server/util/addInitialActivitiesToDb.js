@@ -1,5 +1,6 @@
 const { createActivity } = require('../db');
 const { addMetricsToActivity } = require('../db/activity_metrics');
+const { createMap } = require('../db/maps');
 const { createMetric } = require('../db/metrics');
 
 const addInitialActivitiesToDb = async (user_id, activities) => {
@@ -25,7 +26,13 @@ const addInitialActivitiesToDb = async (user_id, activities) => {
         elev_high,
         elev_low,
         calories,
+        start_latlng,
+        end_latlng,
+        map: { polyline, summary_polyline },
       } = activity;
+
+      const [start_lat, start_lng] = start_latlng;
+      const [end_lat, end_lng] = end_latlng;
 
       const strava_activity_id = id.toString();
 
@@ -60,6 +67,16 @@ const addInitialActivitiesToDb = async (user_id, activities) => {
       const { metric_id } = metricCreated;
 
       await addMetricsToActivity({ activity_id, metric_id });
+
+      await createMap({
+        start_lat,
+        start_lng,
+        end_lat,
+        end_lng,
+        polyline,
+        summary_polyline,
+        activity_id,
+      });
     }
   } catch (error) {
     console.error(error);

@@ -113,10 +113,10 @@ const createTables = async () => {
 
     CREATE TABLE maps(
       map_id SERIAL PRIMARY KEY,
-      start_lat INTEGER NOT NULL,
-      start_lng INTEGER NOT NULL,
-      end_lat INTEGER NOT NULL,
-      end_lng INTEGER NOT NULL,
+      start_lat NUMERIC(18, 14) NOT NULL,
+      start_lng NUMERIC(18, 14) NOT NULL,
+      end_lat NUMERIC(18, 14) NOT NULL,
+      end_lng NUMERIC(18, 14)NOT NULL,
       polyline TEXT,
       summary_polyline TEXT,
       activity_id INTEGER REFERENCES activities(activity_id)
