@@ -17,7 +17,7 @@ async function createActivity({
     INSERT INTO activities( user_id, strava_activity_id, name, type, sport_type, description)
     VALUES ($1, $2, $3, $4, $5, $6)
     ON CONFLICT (strava_activity_id) DO NOTHING
-    RETURNING user_id, strava_activity_id, name, type, sport_type, description;
+    RETURNING *;
     `,
       [user_id, strava_activity_id, name, type, sport_type, description]
     );

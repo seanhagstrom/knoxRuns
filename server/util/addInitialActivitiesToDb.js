@@ -1,4 +1,5 @@
 const { createActivity } = require('../db');
+const { addMetricsToActivity } = require('../db/activity_metrics');
 const { createMetric } = require('../db/metrics');
 
 const addInitialActivitiesToDb = async (user_id, activities) => {
@@ -27,7 +28,8 @@ const addInitialActivitiesToDb = async (user_id, activities) => {
       } = activity;
 
       const strava_activity_id = id.toString();
-      console.log({
+
+      const activityCreated = await createActivity({
         user_id,
         strava_activity_id,
         name,
@@ -36,16 +38,9 @@ const addInitialActivitiesToDb = async (user_id, activities) => {
         description,
       });
 
-      await createActivity({
-        user_id,
-        strava_activity_id,
-        name,
-        type,
-        sport_type,
-        description,
-      });
+      const { activity_id } = activityCreated;
 
-      await createMetric({
+      const metricCreated = await createMetric({
         elapsed_time,
         moving_time,
         start_date,
@@ -61,6 +56,10 @@ const addInitialActivitiesToDb = async (user_id, activities) => {
         elev_low,
         calories,
       });
+
+      const { metric_id } = metricCreated;
+
+      await addMetricsToActivity({ activity_id, metric_id });
     }
   } catch (error) {
     console.error(error);
