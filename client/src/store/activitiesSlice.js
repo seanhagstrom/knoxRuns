@@ -1,28 +1,31 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-export const setActivities = createAsyncThunk('api/setActivities', async () => {
-  try {
-    const token = localStorage.token;
+export const setSummaryActivities = createAsyncThunk(
+  'api/setSummaryActivities',
+  async () => {
+    try {
+      const token = localStorage.token;
 
-    if (!token) {
-      return [];
+      if (!token) {
+        return [];
+      }
+      const response = await fetch(`api/activities`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      console.error(error);
+      return error;
     }
-    const response = await fetch(`api/activities`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error(error);
-    return error;
   }
-});
+);
 
 const activitiesSlice = createSlice({
   name: 'activities',
@@ -32,7 +35,7 @@ const activitiesSlice = createSlice({
     error: null,
   },
   reducers: {
-    setActivities: {
+    setSummaryActivities: {
       reducer(state, action) {
         action.payload;
       },
@@ -40,14 +43,14 @@ const activitiesSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(setActivities.pending, (state, action) => {
+      .addCase(setSummaryActivities.pending, (state, action) => {
         state.status = 'loading';
       })
-      .addCase(setActivities.fulfilled, (state, action) => {
+      .addCase(setSummaryActivities.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.data = action.payload;
       })
-      .addCase(setActivities.rejected, (state, action) => {
+      .addCase(setSummaryActivities.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error;
       });

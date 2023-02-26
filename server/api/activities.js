@@ -1,6 +1,9 @@
 const router = require('express').Router();
 const axios = require('axios');
-const { getActivitiesByUserId } = require('../db');
+const {
+  getActivitiesByUserId,
+  getSummaryActivitiesByUserId,
+} = require('../db');
 const sampleActivities = require('../../resources/sample-activities.json');
 const STRAVA_ACTIVITIES_URL =
   'https://www.strava.com/api/v3/athlete/activities';
@@ -43,7 +46,7 @@ router.get('/', async (req, res, next) => {
     }
     */
 
-    const activities = await getActivitiesByUserId({ user_id });
+    const activities = await getSummaryActivitiesByUserId({ user_id });
     res.send(activities).status(200);
   } catch (error) {
     throw error;

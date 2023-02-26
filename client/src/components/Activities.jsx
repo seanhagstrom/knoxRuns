@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Activity from './Activity';
-import { setActivities } from '../store/activitiesSlice';
+import { setSummaryActivities } from '../store/activitiesSlice';
 
 function Activities() {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ function Activities() {
   console.log({ activities });
 
   useEffect(() => {
-    if (status === 'idle') dispatch(setActivities());
+    if (status === 'idle') dispatch(setSummaryActivities());
   }, [status, dispatch]);
   return (
     <>
