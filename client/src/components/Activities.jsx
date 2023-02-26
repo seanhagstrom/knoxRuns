@@ -3,6 +3,7 @@ import { Outlet, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Activity from './Activity';
 import { setSummaryActivities } from '../store/activitiesSlice';
+import Map from './Map';
 
 function Activities() {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ function Activities() {
       {activities.length ? (
         <section>
           <h1>Activities</h1>
+          {/* <Map /> */}
           {activities.map((activity, index) => (
             <Link
               key={activity.activity_id}
